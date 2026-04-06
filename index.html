@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Elite Zentrale</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #000; color: #00ff00; font-family: sans-serif; text-align: center; padding: 20px; }
+        .header { border: 2px solid #00ff00; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 10px #00ff00; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #111; border: 1px solid #00ff00; color: #00ff00; font-weight: bold; cursor: pointer; }
+        .btn:hover { background: #00ff00; color: #000; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>APEX ELITE</h1><p>COMMAND CENTER</p></div>
+    <button class="btn" onclick="tg.sendData('regeln')">📜 REGELN</button>
+    <button class="btn" onclick="tg.sendData('support')">🆘 SUPPORT</button>
+    <button class="btn" onclick="tg.close()">❌ SCHLIESSEN</button>
+    <script>let tg = window.Telegram.WebApp; tg.expand();</script>
+</body>
+</html>
