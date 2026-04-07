@@ -12,7 +12,6 @@
             font-family: 'Courier New', Courier, monospace; 
             text-align: center; 
             padding: 20px;
-            overflow: hidden; 
         }
         .header { 
             border: 2px solid #00ff00; 
@@ -29,7 +28,7 @@
             object-fit: cover;
         }
         .header h1 { font-size: 1.5rem; margin: 5px 0; text-shadow: 0 0 10px #00ff00; }
-        #user-welcome { font-size: 1rem; color: #fff; margin-bottom: 5px; text-transform: none; }
+        #user-welcome { font-size: 1rem; color: #fff; margin-bottom: 5px; }
         
         .btn { 
             display: block; width: 100%; padding: 18px; margin: 12px 0; 
@@ -38,6 +37,7 @@
             border-radius: 8px; box-shadow: inset 0 0 5px #00ff00;
         }
         .btn:active { background: #00ff00; color: #000; transform: scale(0.96); }
+        .btn-red { border-color: #ff0000; color: #ff0000; box-shadow: inset 0 0 5px #ff0000; }
     </style>
 </head>
 <body>
@@ -47,9 +47,9 @@
         <h1>APEX ELITE</h1>
     </div>
 
-    <button class="btn" onclick="playClick(); sendToBot('regeln')">📜 REGELN</button>
-    <button class="btn" onclick="playClick(); sendToBot('support')">🆘 SUPPORT</button>
-    <button class="btn" onclick="playClick(); closeApp()">❌ SCHLIESSEN</button>
+    <button class="btn" onclick="executeCommand('takeover', -100123456789)">🏴‍☠️ TAKEOVER TEST</button>
+    <button class="btn" onclick="executeCommand('release', -100123456789)">🔓 RELEASE TEST</button>
+    <button class="btn btn-red" onclick="tg.close()">❌ TERMINAL SCHLIESSEN</button>
 
     <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
 
@@ -58,33 +58,39 @@
         tg.ready();
         tg.expand();
 
-        // Punkt 3: User Begrüßung
-        const user = tg.initDataUnsafe.user;
-        const welcomeElement = document.getElementById('user-welcome');
-        if (user && user.first_name) {
-            welcomeElement.innerText = `Willkommen, ${user.first_name}`;
-        } else {
-            welcomeElement.innerText = `Systemzugriff gewährt`;
-        }
+        // DEINE CLOUDSHELL URL
+        const API_BASE = "https://8080-cs-b5c454fa-e76c-418e-b16c-f52d280aa155.cs-europe-west4-fycr.cloudshell.dev";
 
-        // Punkt 2: Sound Logik
+        const user = tg.initDataUnsafe.user;
+        if (user) document.getElementById('user-welcome').innerText = `Willkommen, ${user.first_name}`;
+
         function playClick() {
             const sound = document.getElementById('clickSound');
             sound.currentTime = 0;
             sound.play();
         }
 
-        function sendToBot(command) {
-            // Kurze Verzögerung für den Sound, bevor die App schließt/sendet
-            setTimeout(() => {
-                tg.sendData(command);
-            }, 150);
-        }
+        async function executeCommand(action, targetId) {
+            playClick();
+            console.log(`Sende ${action} an ${targetId}`);
 
-        function closeApp() {
-            setTimeout(() => {
-                tg.close();
-            }, 150);
+            try {
+                const response = await fetch(`${API_BASE}/api/command`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action, target: targetId })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    tg.showAlert("✅ Befehl ausgeführt: " + result.msg);
+                } else {
+                    tg.showAlert("❌ Fehler: " + result.reason);
+                }
+            } catch (error) {
+                tg.showAlert("📡 Funkstörung! Ist die CloudShell online?");
+            }
         }
     </script>
 </body>
